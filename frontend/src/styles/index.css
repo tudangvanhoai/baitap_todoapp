@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+@import url('https://site-assets.fontawesome.com/releases/v6.5.1/css/all.css');
+@import url('https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-thin.css');
+@import url('https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-solid.css');
+@import url('https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-regular.css');
+@import url('https://site-assets.fontawesome.com/releases/v6.5.1/css/sharp-light.css');
+
+:root {
+  --font-family: 'Roboto', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  box-sizing: border-box;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  line-height: 1.5;
+  padding-right: 0 !important;
+  text-rendering: optimizeSpeed;
+  width: 100% !important;
+}
+
+/* Default element css */
+a {
+  color: currentColor;
+}
+
+a:hover {
+  color: currentColor;
+}
+
+a,
+input[type='submit'],
+button {
+  transition: all 0.2s ease;
+}
+
+a:hover,
+input[type='submit']:hover,
+button:hover {
+  transition-duration: 0.1s;
+}
+
+input,
+select,
+textarea {
+  outline: none;
+}
+
+.ant-picker-ok button {
+  background-color: #1677ff;
+}
