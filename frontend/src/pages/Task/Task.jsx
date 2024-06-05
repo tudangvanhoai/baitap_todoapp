@@ -76,7 +76,7 @@ const Task = () => {
       .delete(id)
       .then(() => {
         Toast.success('Task deleted successfully')
-        handleFetchTasks({ page: pagination.current_page })
+        handleFetchTasks(dataSearch)
       })
       .catch(err => {
         Toast.error(err?.response?.data?.message || err.message)
@@ -117,7 +117,7 @@ const Task = () => {
   }, [users])
 
   return (
-    <div className="container mb-20 min-h-screen">
+    <div className="container min-h-screen pb-20">
       <h1 className="py-5 text-center text-4xl font-bold">List Tasks</h1>
 
       <div className="space-y-6">
@@ -173,7 +173,7 @@ const Task = () => {
                         {task.status}
                       </div>
                     </td>
-                    <td>{dayjs(task.created_at).format('YYYY-MM-DD HH:mm:ss')}</td>
+                    <td>{dayjs(task.createdAt).format('YYYY-MM-DD HH:mm:ss')}</td>
                     <td className="flex gap-2">
                       <Button
                         className="mr-2"
@@ -243,7 +243,7 @@ const Task = () => {
           task={taskEdit}
           userOptions={userOptions}
           handleFetchTasks={handleFetchTasks}
-          currentPage={pagination.current_page}
+          dataSearch={dataSearch}
         />
       </Modal>
     </div>

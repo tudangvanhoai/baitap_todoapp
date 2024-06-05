@@ -1,120 +1,124 @@
-const Task = require('../models/Task')
-const define = require('../config/define')
+const mongoose = require('mongoose')
+const taskService = require('../services/taskService')
+const userService = require('../services/userService')
 
 exports.index = async (req, res) => {
-  const currentPage = parseInt(req.query.page) || 1
-  const { q, searchAssignee, searchStatus } = req.query
-  const limit = define.PAGINATION.LIMIT
+  try {
+    const data = await taskService.getList(req)
 
-  const query = {}
-  if (q) {
-    query.$or = [
-      { title: { $regex: new RegExp(q, 'i') } },
-      { content: { $regex: new RegExp(q, 'i') } },
-    ]
+    return res.json(data)
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message,
+    })
   }
-  if (searchAssignee) {
-    query.assignee = searchAssignee == 'no-assign' ? null : searchAssignee
-  }
-  if (searchStatus) {
-    query.status = searchStatus
-  }
-
-  const totalTasks = await Task.countDocuments(query)
-  const totalPages = Math.ceil(totalTasks / limit)
-
-  const tasks = await Task.find(query)
-    .sort({ created_at: 'desc' })
-    .populate('assignee')
-    .skip((currentPage - 1) * limit)
-    .limit(limit)
-
-  res.json({
-    data: tasks,
-    meta: {
-      current_page: currentPage,
-      last_page: totalPages,
-      per_page: limit,
-      from: (currentPage - 1) * limit + 1,
-      to: currentPage * limit < totalTasks ? currentPage * limit : totalTasks,
-      total: totalTasks,
-    },
-  })
 }
 
 exports.create = async (req, res) => {
-  const { title, content, assignee, status } = req.body
+  // Start a transaction
+  const session = await mongoose.startSession()
+  session.startTransaction()
 
   try {
-    const task = new Task({ title, content, assignee, status })
-    await task.save()
+    // Create task
+    const task = await taskService.create(req, session)
 
-    res.status(201).json({
-      data: task,
-    })
+    // Add task to user
+    await userService.addTask(task.assignee, task._id, session)
+
+    // Commit the transaction
+    await session.commitTransaction()
+    session.endSession()
+
+    return res.json(task)
   } catch (err) {
-    res.status(500).json({
-      message: err.message || 'An error occurred while creating the task. Please try again.',
+    // Abort the transaction
+    await session.abortTransaction()
+    session.endSession()
+
+    return res.status(400).json({
+      message: err.message,
     })
   }
 }
 
 exports.show = async (req, res) => {
-  const { id } = req.params
-
   try {
-    const task = await Task.findById(id)
+    const { id } = req.params
+    const task = await taskService.getById(id)
 
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' })
-    }
-
-    res.json({
-      data: task,
-    })
+    return res.json(task)
   } catch (err) {
-    res.status(500).json({
-      message: err.message || 'An error occurred while fetching the task. Please try again.',
+    res.status(404).json({
+      message: err.message,
     })
   }
 }
 
 exports.update = async (req, res) => {
-  const { id } = req.params
-  const { title, content, assignee, status } = req.body
+  // Start a transaction
+  const session = await mongoose.startSession()
+  session.startTransaction()
 
   try {
-    const task = await Task.findById(id)
+    const { id } = req.params
+    const task = await taskService.getById(id)
 
-    if (!task) {
-      return res.status(404).json({ message: 'Task not found' })
+    const oldAssigneeId = task.assignee
+    const newAssigneeId = req.body.assignee
+
+    // Update task
+    await taskService.update(task, req, session)
+
+    // Update task in user
+    if (oldAssigneeId?.toString() != newAssigneeId) {
+      await userService.removeTask(oldAssigneeId, task._id, session)
+      await userService.addTask(newAssigneeId, task._id, session)
     }
 
-    task.title = title
-    task.content = content
-    task.assignee = assignee
-    task.status = status
+    // Commit the transaction
+    await session.commitTransaction()
+    session.endSession()
 
-    await task.save()
-
-    res.json()
+    return res.json()
   } catch (err) {
-    res.status(500).json({
-      message: err.message || 'An error occurred while updating the task. Please try again.',
+    // Abort the transaction
+    await session.abortTransaction()
+    session.endSession()
+
+    return res.status(404).json({
+      message: err.message,
     })
   }
 }
 
 exports.delete = async (req, res) => {
-  const { id } = req.params
+  // Start a transaction
+  const session = await mongoose.startSession()
+  session.startTransaction()
 
   try {
-    await Task.deleteOne({ _id: id })
+    const { id } = req.params
+    const task = await taskService.getById(id)
+
+    // Delete task
+    await taskService.deleteById(id, session)
+
+    // Remove task in user
+    await userService.removeTask(task.assignee, task._id, session)
+
+    // Commit the transaction
+    await session.commitTransaction()
+    session.endSession()
 
     res.json()
   } catch (err) {
-    res.status(500).json({
-      message: err.message || 'An error occurred while deleting the task. Please try again.',
+    // Abort the transaction
+    await session.abortTransaction()
+    session.endSession()
+
+    res.status(404).json({
+      message: err.message,
     })
   }
 }

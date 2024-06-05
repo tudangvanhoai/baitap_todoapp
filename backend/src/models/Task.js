@@ -19,7 +19,7 @@ var schema = new mongoose.Schema({
     enum: ['todo', 'inprogress', 'done'],
     default: 'todo',
   },
-  created_at: {
+  createdAt: {
     type: Date,
     default: Date.now,
   },

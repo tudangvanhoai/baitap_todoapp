@@ -13,7 +13,7 @@ const defaultValues = {
 }
 
 const FormCreateAndUpdate = props => {
-  const { setIsOpenModal, task, userOptions, currentPage, handleFetchTasks } = props
+  const { setIsOpenModal, task, userOptions, dataSearch, handleFetchTasks } = props
   const { showLoading, hideLoading } = useLoading()
 
   const { control, handleSubmit } = useForm({
@@ -44,7 +44,7 @@ const FormCreateAndUpdate = props => {
       .then(() => {
         Toast.success('Task updated successfully')
         setIsOpenModal(false)
-        handleFetchTasks({ page: currentPage })
+        handleFetchTasks(dataSearch)
       })
       .catch(err => {
         Toast.error(err?.response?.data?.message || err.message)
