@@ -1,10 +1,10 @@
-const express = require('express')
-const route = express.Router()
+import express from 'express'
+import taskRoute from './taskRoute'
+import userRoute from './userRoute'
 
-const taskRoute = require('./taskRoute')
-const userRoute = require('./userRoute')
+const route = express.Router()
 
 route.use('/tasks', taskRoute)
 route.use('/users', userRoute)
 
-module.exports = route
+export default route

@@ -1,7 +1,7 @@
-const express = require('express')
-const route = express.Router()
+import express from 'express'
+import taskController from '../controllers/taskController'
 
-const taskController = require('../controllers/taskController')
+const route = express.Router()
 
 route.get('/', taskController.index)
 route.post('/', taskController.create)
@@ -9,4 +9,4 @@ route.get('/:id', taskController.show)
 route.put('/:id', taskController.update)
 route.delete('/:id', taskController.delete)
 
-module.exports = route
+export default route

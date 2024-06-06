@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Button, Input, Select, Toast } from '@/components/UI'
 import { TASK_STATUS_LIST } from '@/config/define'
 import { useLoading } from '@/contexts/loadingContext'
 import taskService from '@/services/api/taskService'
-import userService from '@/services/api/userService'
 
 const defaultValues = {
   title: '',
@@ -40,7 +38,7 @@ const FormCreateAndUpdate = props => {
   const handleUpdate = fields => {
     showLoading()
     taskService
-      .update(task._id, { ...fields, assignee: fields.assignee || null })
+      .update(task._id, fields)
       .then(() => {
         Toast.success('Task updated successfully')
         setIsOpenModal(false)
@@ -55,10 +53,11 @@ const FormCreateAndUpdate = props => {
   }
 
   const onSubmit = fields => {
+    const fieldsTemp = { ...fields, assignee: fields.assignee || null }
     if (task) {
-      handleUpdate(fields)
+      handleUpdate(fieldsTemp)
     } else {
-      handleCreate(fields)
+      handleCreate(fieldsTemp)
     }
   }
 

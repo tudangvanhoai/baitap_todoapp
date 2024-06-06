@@ -158,8 +158,10 @@ const Task = () => {
                 tasks.map(task => (
                   <tr key={task._id} className="border-b [&>*]:px-6 [&>*]:py-4">
                     <td>{task._id}</td>
-                    <td>{task.title}</td>
-                    <td>{task.content}</td>
+                    <td className="min-w-36">{task.title}</td>
+                    <td>
+                      <div className="min-w-52">{task.content}</div>
+                    </td>
                     <td>{task.assignee?.name}</td>
                     <td>
                       <div
@@ -174,25 +176,27 @@ const Task = () => {
                       </div>
                     </td>
                     <td>{dayjs(task.createdAt).format('YYYY-MM-DD HH:mm:ss')}</td>
-                    <td className="flex gap-2">
-                      <Button
-                        className="mr-2"
-                        onClick={() => {
-                          setIsOpenModal(true)
-                          setTaskEdit({ ...task, assignee: task.assignee ?? '' })
-                        }}
-                      >
-                        <i className="fa-regular fa-pen-to-square"></i>
-                        <span>Edit</span>
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          handleConfirmDeleteTask(task._id)
-                        }}
-                      >
-                        <i className="fa-regular fa-trash"></i>
-                        <span>Delete</span>
-                      </Button>
+                    <td>
+                      <div className="flex gap-2">
+                        <Button
+                          className="mr-2"
+                          onClick={() => {
+                            setIsOpenModal(true)
+                            setTaskEdit({ ...task, assignee: task.assignee ?? '' })
+                          }}
+                        >
+                          <i className="fa-regular fa-pen-to-square"></i>
+                          <span>Edit</span>
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            handleConfirmDeleteTask(task._id)
+                          }}
+                        >
+                          <i className="fa-regular fa-trash"></i>
+                          <span>Delete</span>
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
