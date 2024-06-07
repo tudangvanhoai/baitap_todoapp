@@ -48,7 +48,7 @@ const Task = () => {
   const handleFetchUsers = () => {
     userService
       .getAll()
-      .then(({ data }) => {
+      .then(data => {
         setUsers(data)
       })
       .catch(err => {
@@ -76,7 +76,7 @@ const Task = () => {
       .delete(id)
       .then(() => {
         Toast.success('Task deleted successfully')
-        handleFetchTasks(dataSearch)
+        handleFetchTasks({ ...dataSearch, page: 1 })
       })
       .catch(err => {
         Toast.error(err?.response?.data?.message || err.message)
@@ -97,7 +97,9 @@ const Task = () => {
 
   const handleChangePage = selected => {
     setPagination({ ...pagination, current_page: selected })
-    handleFetchTasks({ ...dataSearch, page: selected })
+    const dataTemp = { ...dataSearch, page: selected }
+    handleFetchTasks(dataTemp)
+    setDataSearch(dataTemp)
   }
 
   useEffect(() => {
@@ -144,7 +146,6 @@ const Task = () => {
           <table className="w-full text-left">
             <thead className="bg-gray-300 text-xs uppercase">
               <tr className="[&>*]:px-6 [&>*]:py-4">
-                <th>ID</th>
                 <th>Title</th>
                 <th>Content</th>
                 <th>Assignee</th>
@@ -157,7 +158,6 @@ const Task = () => {
               {tasks.length ? (
                 tasks.map(task => (
                   <tr key={task._id} className="border-b [&>*]:px-6 [&>*]:py-4">
-                    <td>{task._id}</td>
                     <td className="min-w-36">{task.title}</td>
                     <td>
                       <div className="min-w-52">{task.content}</div>
@@ -211,26 +211,28 @@ const Task = () => {
           </table>
         </div>
 
-        <ReactPaginate
-          breakLabel="..."
-          previousLabel="<"
-          nextLabel=">"
-          forcePage={pagination.current_page - 1}
-          pageRangeDisplayed={PAGINATION.PAGE_RANGE_DISPLAY}
-          pageCount={pagination.last_page ?? 0}
-          disableInitialCallback={true}
-          renderOnZeroPageCount={null}
-          className="flex select-none items-center justify-center"
-          breakLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-          pageLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-          previousLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700"
-          nextLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
-          activeLinkClassName="!text-blue-800 !bg-blue-300"
-          disabledLinkClassName="!bg-gray-200 !text-gray-400 cursor-default"
-          onPageChange={({ selected }) => {
-            handleChangePage(selected + 1)
-          }}
-        />
+        <div className="flex items-center justify-center overflow-x-auto">
+          <ReactPaginate
+            breakLabel="..."
+            previousLabel="<"
+            nextLabel=">"
+            forcePage={pagination.current_page - 1}
+            pageRangeDisplayed={PAGINATION.PAGE_RANGE_DISPLAY}
+            pageCount={pagination.last_page ?? 0}
+            disableInitialCallback={true}
+            renderOnZeroPageCount={null}
+            className="flex select-none items-center justify-center"
+            breakLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+            pageLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+            previousLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700"
+            nextLinkClassName="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700"
+            activeLinkClassName="!text-blue-800 !bg-blue-300"
+            disabledLinkClassName="!bg-gray-200 !text-gray-400 cursor-default"
+            onPageChange={({ selected }) => {
+              handleChangePage(selected + 1)
+            }}
+          />
+        </div>
       </div>
 
       <Modal
@@ -243,11 +245,12 @@ const Task = () => {
         }}
       >
         <FormCreateAndUpdate
-          setIsOpenModal={setIsOpenModal}
           task={taskEdit}
           userOptions={userOptions}
-          handleFetchTasks={handleFetchTasks}
           dataSearch={dataSearch}
+          setIsOpenModal={setIsOpenModal}
+          handleFetchTasks={handleFetchTasks}
+          handleSearchReset={handleSearchReset}
         />
       </Modal>
     </div>

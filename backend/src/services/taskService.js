@@ -1,5 +1,5 @@
-const Task = require('../models/Task')
-const define = require('../config/define')
+import Task from '../models/Task'
+import define from '../config/define'
 
 exports.getList = async req => {
   const currentPage = parseInt(req.query.page) || 1
@@ -25,8 +25,9 @@ exports.getList = async req => {
 
   // Get tasks
   const tasks = await Task.find(query)
+    .select('_id title content status createdAt')
     .sort({ createdAt: 'desc' })
-    .populate('assignee')
+    .populate('assignee', '_id name')
     .skip((currentPage - 1) * limit)
     .limit(limit)
 
@@ -54,6 +55,8 @@ exports.create = async (req, session) => {
 
 exports.getById = async id => {
   const task = await Task.findById(id)
+    .select('_id title content status createdAt')
+    .populate('assignee', '_id name')
 
   if (!task) {
     throw new Error('Task not found')

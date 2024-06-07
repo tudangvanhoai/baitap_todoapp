@@ -1,4 +1,8 @@
-const User = require('../models/User')
+import User from '../models/User'
+
+exports.getAll = async () => {
+  return await User.find().select('_id name')
+}
 
 exports.addTask = async (id, task, session) => {
   if (!id) return

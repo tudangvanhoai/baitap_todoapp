@@ -1,13 +1,13 @@
-import User from '../models/User'
+import userService from '../services/userService'
 
-const userController = {
-  index: async (req, res) => {
-    const users = await User.find()
+exports.index = async (req, res) => {
+  try {
+    const data = await userService.getAll()
 
-    res.json({
-      data: users,
+    return res.json(data)
+  } catch (err) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      message: err.message,
     })
-  },
+  }
 }
-
-export default userController

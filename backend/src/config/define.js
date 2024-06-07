@@ -1,5 +1,3 @@
-module.exports = {
-  PAGINATION: {
-    LIMIT: 5,
-  },
+exports.PAGINATION = {
+  LIMIT: 5,
 }

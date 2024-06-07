@@ -7,11 +7,11 @@ import taskService from '@/services/api/taskService'
 const defaultValues = {
   title: '',
   content: '',
-  status: 'todo',
 }
 
 const FormCreateAndUpdate = props => {
-  const { setIsOpenModal, task, userOptions, dataSearch, handleFetchTasks } = props
+  const { task, userOptions, dataSearch, setIsOpenModal, handleFetchTasks, handleSearchReset } =
+    props
   const { showLoading, hideLoading } = useLoading()
 
   const { control, handleSubmit } = useForm({
@@ -25,10 +25,16 @@ const FormCreateAndUpdate = props => {
       .then(() => {
         Toast.success('Task created successfully')
         setIsOpenModal(false)
-        handleFetchTasks()
+        handleSearchReset()
       })
       .catch(err => {
-        Toast.error(err?.response?.data?.message || err.message)
+        let errorMessage = ''
+        if (err?.response?.status === 422) {
+          errorMessage = err?.response?.data?.message.join('\n')
+        } else {
+          errorMessage = err?.response?.data?.message || err.message
+        }
+        Toast.error(errorMessage)
       })
       .finally(() => {
         hideLoading()
@@ -45,7 +51,13 @@ const FormCreateAndUpdate = props => {
         handleFetchTasks(dataSearch)
       })
       .catch(err => {
-        Toast.error(err?.response?.data?.message || err.message)
+        let errorMessage = ''
+        if (err?.response?.status === 422) {
+          errorMessage = err?.response?.data?.message.join('\n')
+        } else {
+          errorMessage = err?.response?.data?.message || err.message
+        }
+        Toast.error(errorMessage)
       })
       .finally(() => {
         hideLoading()
