@@ -4,8 +4,8 @@ import morgan from 'morgan'
 import bodyParser from 'body-parser'
 import multer from 'multer'
 import cors from 'cors'
-import routes from './src/routes'
-import connectDB from './src/database/connection'
+import routes from './routes'
+import connectDB from './database/connection'
 
 const app = express()
 const upload = multer()
