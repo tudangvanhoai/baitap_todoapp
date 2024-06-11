@@ -10,10 +10,15 @@ import connectDB from './database/connection'
 const app = express()
 const upload = multer()
 
-app.use(cors())
-
 // Load environment variables from .env file
 dotenv.config({ path: '.env' })
+
+// Enable CORS (Cross-Origin Resource Sharing)
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+  }),
+)
 
 // Log HTTP requests
 app.use(morgan('tiny'))

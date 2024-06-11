@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon --exec ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "dev": "ts-node-dev src/index.ts",
     "db:seed": "ts-node src/database/seeder/dbSeeder.ts"
   },
   "author": "",
@@ -19,8 +21,7 @@
     "joi": "^17.13.1",
     "mongoose": "^8.4.1",
     "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1",
-    "nodemon": "^3.1.2"
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
@@ -30,6 +31,7 @@
     "@types/morgan": "^1.9.9",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.14.2",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.4.5"
   }
